@@ -1,15 +1,22 @@
+// Basic imports
 #include<stdio.h>
 #include<conio.h>
 #include<stdlib.h>
 #include<string.h>
+
 void decrypt();
 void encrypt();
+
+// File pointers
 FILE *sfile,*tfile;
+
+// Some global variables
 char password[20],file_path[100],extension[10];
 char afile_path[15]="temp.";
+
 void main()
 {
-	clrscr();
+	clrscr(); //Remove this for LINUX
 	char ch;
 	int x,y,z;
 	while(1)
@@ -28,15 +35,18 @@ void main()
 	}
 
 }
+// Function to encrypt the file
 void encrypt()
 {
-   long int i,j=0,k;
-   long int count=0;
+	long int i,j=0,k;
+	long int count=0;
 	char ch;
 	printf("Enter the filename with extension:");
-	gets(file_path);
+	gets(file_path);  // Reads the path of file to encrypt
 	printf("file = %s\n",file_path);
-	/*	file_pathr=*/strrev(file_path);
+	
+	// Reverses the path to check the extension of the file
+	strrev(file_path);
 	for(count=0;file_path[count]!='.';count++)
 	{
 		extension[count]=file_path[count];
@@ -51,8 +61,10 @@ void encrypt()
 	strrev(extension);
 	strrev(file_path);
 	count=0;
+	
+	// Reads the password
 	printf("Enter the password of max 15 characters:");
-	AGAINPASS:i=0;
+	AGAINPASS:i=0; // A goto statement if the user wants to re-enter the password
 	while(1)
 	{
 	   ch=getch();
@@ -82,27 +94,28 @@ void encrypt()
 	 exit(0);
 	 return;
 	}
+	
+	// Checking the length of the file
 	while(!feof(sfile))
 	{
 	   //	printf(" (%c - %d) ",ch,count);
-	 //	ch=fgetc(sfile)
 		fread(&ch,1,1,sfile);
 		count++;
-//		printf("count = %d",count);
-	  //	ch=fgetc(sfile);
+           //	printf("count = %d",count);
+	   //	ch=fgetc(sfile);
 	}
 	fclose(sfile);
+	
+	// Performing the encryption
 	sfile=fopen(file_path,"rb");
 	char tempch;
-	i=count/strlen(password);
- //	char afile_path[15];
+	i=count/strlen(password);  // We divide the file into n number of parts where n is the length of the file, i is the size of each part
 	printf("Size = %ld bytes",count);
- //	afile_path="temp.";
 	strcat(afile_path,extension);
 	printf("\nEncrypting file - %s *PLEASE DON'T CLOSE THE PROGRAM*\n",afile_path);
+	
+	// We add ASCII value of each character of the password of it's corresponding part of the divided file
 	tfile=fopen(afile_path,"wb");
-  //	int count1=0;
-//	 while((ch=fget(sfile))!=EOF)
 	  for(j=0;j<strlen(password);j++)
 	  {
 	   for(k=1;k<=i;k++)
@@ -114,11 +127,11 @@ void encrypt()
 		   break;
 		 }
 		 ch=ch+password[j];
-	 //	 tempch=(fgetc(sfile)+(password[j]));
 		 fwrite(&ch,1,1,tfile);
-	   //	 count1++;
 		}
 	 }
+	
+	// This part is to encrypt the last remaining part of the file that is unequal in size of the other parts
 	 while(!feof(sfile))
 	 {
 		 fread(&ch,1,1,sfile);
@@ -127,17 +140,14 @@ void encrypt()
 		   printf("\nFile Encrypted!\n");
 		   break;
 		 }
-	  //	 tempch=fgetc(sfile))!=EOF
 		 ch=ch+(password[0]+password[1]);
-	  //	 tempch=tempch+(password[0]+password[1]);
 		 fwrite(&ch,1,1,tfile);
-	  //	 fputc(tempch,tfile);
-		// count1++;
 	 }
-  //	 printf("Count 1 = %d",count1);
 	fclose(sfile);
 	fclose(tfile);
 }
+
+// It is the opposite to encryption
 void decrypt()
 {
 	long int count=0;
@@ -182,14 +192,11 @@ void decrypt()
 	char tempfname[15]="j";
 	sfile=fopen(afile_path,"rb");
 	i=count/strlen(password);
-//	printf("count = %d, i = %d",count,i);
 	strcat(tempfname,afile_path);
 	strcpy(afile_path,tempfname);
 	printf("\nDecrypting file - %s *PLEASE DON'T CLOSE THE PROGRAM*\n",afile_path);
 	tfile=fopen(afile_path,"wb");
 
-//	 while((ch=fget(sfile))!=EOF)
-//	tempch=fgetc(sfile);
 	for(j=0;j<strlen(password);j++)
 	  {
 	   for(k=1;k<=i;k++)
@@ -201,9 +208,7 @@ void decrypt()
 		   break;
 		 }
 		 ch=ch-password[j];
-		// tempch=(fgetc(sfile)-(password[j]));
 		 fwrite(&ch,1,1,tfile);
-	  //	 fputc(tempch,tfile);
 		}
 	 }
 	 while(!feof(sfile))
@@ -215,11 +220,8 @@ void decrypt()
 		   break;
 		 }
 		 ch=ch-(password[0]+password[1]);
-		// tempch=tempch-(password[0]+password[1]);
 		 fwrite(&ch,1,1,tfile);
-	   //	 fputc(tempch,tfile);
 	 }
- //	 printf("Count 1 = %d",count1);
 	fclose(sfile);
 	fclose(tfile);
 }
